@@ -7,27 +7,57 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  backend:
+    name: Go Backend & Analytics
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache: true
+
+      - name: Install Dependencies
+        run: go mod download
+
+      - name: Run Unit Tests
+        run: go test -v ./internal/normalize/... ./internal/analytics/... ./internal/cohort/...
+
+      - name: Build Binaries
+        run: |
+          go build -o bin/server ./cmd/server
+          go build -o bin/ingest ./cmd/ingest
+
+  frontend:
+    name: React Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          cache: "pnpm"
+          cache-dependency-path: web/pnpm-lock.yaml
 
-      # Uncomment and adjust the steps below to match your project's setup
+      - name: Install Dependencies
+        working-directory: web
+        run: pnpm install --frozen-lockfile
 
-      # - name: Install dependencies
-      #   run: npm ci
+      - name: Run Vitest Component Tests
+        working-directory: web
+        run: pnpm test
 
-      # - name: Lint
-      #   run: npm run lint
-
-      # - name: Run tests
-      #   run: npm test
-
-      # - name: Build
-      #   run: npm run build
+      - name: Build Frontend Production Distribution
+        working-directory: web
+        run: pnpm run build
