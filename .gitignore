@@ -1,74 +1,34 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Binaries
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Dataset files and analytical database
+data/raw/
+data/processed/
+data/manifests/
+*.parquet
+*.duckdb
+*.duckdb.wal
 
 # Dependencies
-node_modules
-test/node_modules
-.pnp
-.pnp.js
+node_modules/
+web/node_modules/
+web/dist/
 
-# Testing
-coverage
-.nyc_output
-test/**/out*
-test/**/next-env.d.ts
+# Logs & temp
+*.log
+*.tmp
 .DS_Store
-e2e-tests
-test/tmp/**
 
-
-# Production
-build
-dist
-.next
-target
-.out
-
-# Editors
-**/.idea
-**/.#*
-
-# Examples
-examples/**/out
-examples/**/.env*.local
-
-pr-stats.md
-test-timings.json
-
-# Vercel
-.vercel
-.now
-
-# Cache
-*.tsbuildinfo
-
-# Misc
-.DS_Store
+# Environment
 .env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
 
-# Logs
-*.log
-pids
-*.cpuprofile
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Testing
+coverage/
 
-
-# Firebase
-.firebase
-
-# Flutter
-.dart_tool
-.idea
-.pub-cache
-.packages
-
-# Comment following line if you'd like to commit and push google-services.json to GitHub
-*google-services.json
-
-# Python
-venv
+tsconfig.tsbuildinfo
