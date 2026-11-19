@@ -1,46 +1,100 @@
-## Contributing
+# Contributing to `steam-cohort-bench`
 
-We welcome contributions of all kinds to improve this project! Here's how you can get involved:
+Thank you for your interest in contributing to `steam-cohort-bench`! We welcome community contributions, bug reports, feature suggestions, and documentation improvements.
 
-1. **Fork the Repository**: Start by forking the repository to your GitHub account.
+## Code of Conduct
 
-2. **Clone Your Fork**: Clone the forked repository to your local machine:
+All contributors and community members are expected to abide by our [Code of Conduct](./CODE_OF_CONDUCT.md).
 
-   ```bash
-   git clone <repo_url>
-   cd repo_dir
-   ```
+---
 
-3. **Create a Branch**: Create a new branch for your feature or bug fix:
+## Development Workflow
 
-   ```bash
-   git checkout -b feature-name
-   ```
+### 1. Prerequisites
 
-4. **Make Changes**: Make your changes to the codebase. Be sure to follow existing code style and conventions.
+Before setting up the project locally, ensure you have the following installed:
 
-5. **Commit Changes**: Commit your changes with a clear and descriptive message:
+- **Go**: 1.22+ (tested on Go 1.24+) with CGO enabled
+- **C Compiler**: `clang` or `gcc` (required by DuckDB's CGO Go bindings)
+- **Node.js**: v20+ (tested on Node v22)
+- **pnpm**: v9+ (or via `corepack enable`)
 
-   ```bash
-   git commit -m "Add detailed description of the changes"
-   ```
+### 2. Fork and Clone
 
-6. **Push Changes**: Push your changes to your fork:
+```bash
+# Fork the repository on GitHub, then clone your fork:
+git clone https://github.com/<your-username>/steam-cohort-bench.git
+cd steam-cohort-bench
+```
 
-   ```bash
-   git push origin feature-name
-   ```
+### 3. Install Dependencies
 
-7. **Submit a Pull Request**: Open a pull request from your branch to the main repository's branch. Include a detailed description of your changes and the problem they solve.
+```bash
+make install
+```
 
-8. **Review and Feedback**: Participate in the review process. Make any requested changes, and your contribution will be merged!
+### 4. Ingest the Analytical Dataset
 
-### Guidelines
+Before running the server, ingest the ground-truth Steam games dataset:
 
-- Ensure your code follows the existing style and conventions.
-- Include tests for any new functionality or bug fixes.
-- Write clear, concise commit messages and pull request descriptions.
+```bash
+# Download and ingest from Hugging Face:
+go run ./cmd/ingest --download
 
-### Issues
+# Or if you already have the parquet file locally:
+go run ./cmd/ingest --input ./data/raw/steam-games.parquet
+```
 
-Feel free to report bugs or suggest enhancements by creating an issue. Be sure to include detailed information about the problem and, if possible, steps to reproduce it.
+### 5. Running in Development
+
+Run the Go API server and Vite frontend concurrently with live reloading:
+
+- **Terminal 1 (Backend API)**:
+  ```bash
+  go run ./cmd/server
+  ```
+- **Terminal 2 (Frontend Dev Server)**:
+  ```bash
+  cd web && pnpm run dev
+  ```
+  The Vite development server runs at `http://localhost:5173` and automatically proxies `/api` requests to the Go server on port 8080.
+
+---
+
+## Testing
+
+Ensure all tests pass before submitting a pull request:
+
+```bash
+# Run Go unit, integration, and E2E workflow tests
+make test-go
+
+# Run frontend Vitest component tests
+make test-web
+
+# Run the complete test suite
+make test
+```
+
+---
+
+## Pull Request Guidelines
+
+1. **Create a Topic Branch**: Use a descriptive branch name, e.g., `git checkout -b fix-price-histogram-edges` or `git checkout -b feat-tag-filter`.
+2. **Adhere to Code Standards**:
+   - Run `go fmt ./...` and `go vet ./...` on backend code.
+   - Run `pnpm run build` in `web/` to verify TypeScript types and compilation.
+3. **Write Tests**: Accompany new features, normalization rules, or bug fixes with appropriate unit or integration tests.
+4. **Statistical Rigor**: Maintain the project's core philosophy: use distribution-based metrics (percentiles, ranges) rather than simple arithmetic averages. Never fabricate mock statistics or predictive success claims.
+5. **Describe Your Changes**: Provide a clear pull request description outlining the problem solved, testing methodology, and any relevant screenshots for UI changes.
+
+---
+
+## Reporting Issues
+
+If you encounter bugs, data discrepancies, or have ideas for enhancement, please open an issue on GitHub with:
+
+- A clear, descriptive title.
+- Steps to reproduce the issue.
+- Relevant system information (OS, Go version, browser).
+- Expected versus actual behavior.

@@ -1,0 +1,118 @@
+openapi: 3.0.3
+info:
+  title: steam-cohort-bench API
+  description: Analytical market research and cohort benchmarking API for indie game developers.
+  version: 1.0.0
+paths:
+  /api/v1/health:
+    get:
+      summary: Health and readiness check
+      responses:
+        "200":
+          description: Service readiness status
+  /api/v1/meta:
+    get:
+      summary: Dataset metadata and provenance
+      responses:
+        "200":
+          description: Current dataset manifest and available dimensions
+  /api/v1/overview:
+    get:
+      summary: Global market benchmark overview
+      responses:
+        "200":
+          description: Overall dataset statistics and distributions
+  /api/v1/cohorts/benchmark:
+    post:
+      summary: Benchmark a custom cohort
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                genres:
+                  type: array
+                  items:
+                    type: string
+                release_year_min:
+                  type: integer
+                release_year_max:
+                  type: integer
+                price_type:
+                  type: string
+                  enum: [all, free, paid]
+                quality_mode:
+                  type: string
+                  enum: [all, exclude_playtests, more_complete]
+      responses:
+        "200":
+          description: Calculated cohort benchmark result
+  /api/v1/cohorts/compare:
+    post:
+      summary: Compare up to 4 cohorts
+      responses:
+        "200":
+          description: Side-by-side cohort statistics
+  /api/v1/profiles/benchmark:
+    post:
+      summary: Benchmark a hypothetical game profile
+      responses:
+        "200":
+          description: Positioning relative to peer group
+  /api/v1/games:
+    get:
+      summary: Search and paginate game catalog
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: genre
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Paginated games list
+  /api/v1/games/{appID}:
+    get:
+      summary: Get individual game record by AppID
+      parameters:
+        - name: appID
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Game record details
+  /api/v1/data-quality:
+    get:
+      summary: Data quality audit report
+      responses:
+        "200":
+          description: Dataset audit metrics and completeness rates
+  /api/v1/export/cohort:
+    get:
+      summary: Export cohort summary as CSV
+      responses:
+        "200":
+          description: CSV file stream
+  /api/v1/export/games:
+    get:
+      summary: Export games as CSV
+      responses:
+        "200":
+          description: CSV file stream
